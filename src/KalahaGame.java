@@ -35,13 +35,12 @@ public class KalahaGame implements Kalah {
     public KalahaGame() {
     }
 
-    public ArrayList<GameStateObserver> listOfObservers = new ArrayList<GameStateObserver>();
+    public ArrayList<GameStateObserver> listOfObservers = new ArrayList<>();
     private KalahPlayer PLAYER_FIRST = null;
     private KalahPlayer PLAYER_SECOND = null;
-    private KalahPlayer currentPlayer = null;
     private ArrayList<Integer> boardOne = new ArrayList<>();
     private ArrayList<Integer> boardTwo = new ArrayList<>();
-    private KalahaStateImpl kalahaState = new KalahaStateImpl();
+    private final KalahaStateImpl kalahaState = new KalahaStateImpl();
     private Integer housesNumber;
 
     @Override
@@ -74,7 +73,7 @@ public class KalahaGame implements Kalah {
 
     @Override
     public void startGame() {
-        currentPlayer = PLAYER_FIRST;
+        KalahPlayer currentPlayer = PLAYER_FIRST;
         listOfObservers.forEach((observer) -> observer.currentState(kalahaState));
 
         while (kalahaState.getGameState() != KalahaState.GameStates.END_OF_GAME) {
@@ -97,7 +96,7 @@ public class KalahaGame implements Kalah {
             int number_of_seeds = currentBoard.get(number_of_house);
             currentBoard.set(number_of_house, 0);
             for (int i = 0; i < number_of_seeds; i++) {
-                if (counter > currentBoard.size() - 1) {
+                if (counter > currentBoard.size() - 2) {
                     counter = 0;
                 }
                 currentBoard.set(counter, currentBoard.get(counter) + 1);
@@ -107,7 +106,7 @@ public class KalahaGame implements Kalah {
             if (counter != housesNumber) {
                 if (currentBoard.get(counter) == 1) {
                     if (counter <= housesNumber) {
-                        int oppositeHouse = ((currentBoard.size() / 2) + ((currentBoard.size() / 2) - counter - 2));
+                        int oppositeHouse = housesNumber + (housesNumber - counter);
                         if (currentBoard.get(oppositeHouse) != 0) {
                             int bonusSeeds = currentBoard.get(counter) + currentBoard.get(oppositeHouse);
                             currentBoard.set(counter, 0);
@@ -131,6 +130,7 @@ public class KalahaGame implements Kalah {
                 }
             }
             kalahaState.pitsState = Stream.concat(boardOne.stream(), boardTwo.stream()).collect(Collectors.toList());
+            listOfObservers.forEach((observer) -> observer.currentState(kalahaState));
             boolean boardOneEmpty = true;
             boolean boardTwoEmpty = true;
             for (int i = 0; i < boardOne.size() - 1; i++) {
@@ -160,7 +160,7 @@ public class KalahaGame implements Kalah {
                     kalahaState.gameResult = KalahaState.GameResults.DRAW;
                 }
             }
-            listOfObservers.forEach((observer) -> observer.currentState(kalahaState));
         }
+        listOfObservers.forEach((observer) -> observer.currentState(kalahaState));
     }
 }
