@@ -151,7 +151,16 @@ public class KalahaGame implements Kalah {
                 for (int i = 0; i < boardOne.size(); i++) {
                     sumOne += boardOne.get(i);
                     sumTwo += boardTwo.get(i);
+
+                    if (i != housesNumber) {
+                        boardOne.set(i, 0);
+                        boardTwo.set(i, 0);
+                    } else {
+                        boardOne.set(i, sumOne);
+                        boardTwo.set(i, sumTwo);
+                    }
                 }
+                kalahaState.pitsState = Stream.concat(boardOne.stream(), boardTwo.stream()).collect(Collectors.toList());
                 if (sumOne > sumTwo) {
                     kalahaState.gameResult = KalahaState.GameResults.PLAYER1_WON;
                 } else if (sumTwo > sumOne) {
