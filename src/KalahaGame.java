@@ -4,47 +4,15 @@ import interfaces.KalahPlayer;
 import interfaces.KalahaState;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-class KalahaStateImpl implements interfaces.KalahaState {
-    private static KalahaStateImpl instance;
-    public KalahaState.GameStates gameState;
-    public KalahaState.GameResults gameResult;
-    public List<Integer> pitsState;
 
-    private KalahaStateImpl() {};
-
-    public static KalahaStateImpl getInstance() {
-        if (instance == null) {
-            instance = new KalahaStateImpl();
-        }
-        return instance;
-    }
-
-    @Override
-    public List<Integer> getPitsState() {
-        return pitsState;
-    }
-
-    @Override
-    public GameStates getGameState() {
-        return gameState;
-    }
-
-    @Override
-    public GameResults getGameResult() {
-        return gameResult;
-    }
-}
-
-public class KalahaGame implements Kalah {
+public class KalahaGame implements Kalah  {
 
     public KalahaGame() {
     }
 
-    public ArrayList<GameStateObserver> listOfObservers = new ArrayList<>();
     private KalahPlayer PLAYER_FIRST = null;
     private KalahPlayer PLAYER_SECOND = null;
     private ArrayList<Integer> boardOne = new ArrayList<>();
@@ -61,8 +29,8 @@ public class KalahaGame implements Kalah {
         }
         boardOne.add(0);
         boardTwo.add(0);
-        kalahaState.gameState = KalahaState.GameStates.INITAL_STATE;
-        kalahaState.gameResult = KalahaState.GameResults.UNKNOWN;
+        kalahaState.setGameState(KalahaState.GameStates.INITAL_STATE);
+        kalahaState.setGameResult(KalahaState.GameResults.UNKNOWN);
         kalahaState.pitsState = Stream.concat(boardOne.stream(), boardTwo.stream()).collect(Collectors.toList());
         housesNumber = houses;
     }
@@ -78,14 +46,13 @@ public class KalahaGame implements Kalah {
 
     @Override
     public void addObserver(GameStateObserver observer) {
-        listOfObservers.add(observer);
+        new Observer(kalahaState, observer);
     }
 
     @Override
     public void startGame() {
         KalahPlayer currentPlayer = PLAYER_FIRST;
-        listOfObservers.forEach((observer) -> observer.currentState(kalahaState));
-
+        kalahaState.notifyChanged();
         while (kalahaState.getGameState() != KalahaState.GameStates.END_OF_GAME) {
             int number_of_house;
             ArrayList<Integer> currentBoard = new ArrayList<>();
@@ -94,7 +61,7 @@ public class KalahaGame implements Kalah {
             } else {
                 strategy = new Player2Strategy();
             }
-            strategy.afterPlayerTurn(currentBoard, boardOne, boardTwo, kalahaState.gameState);
+            strategy.afterPlayerTurn(currentBoard, boardOne, boardTwo, kalahaState);
             do {
                 number_of_house = currentPlayer.yourMove(currentBoard);
             } while ((number_of_house < 0) || (number_of_house >= housesNumber) || (currentBoard.get(number_of_house) == 0));
@@ -137,7 +104,6 @@ public class KalahaGame implements Kalah {
                 }
             }
             kalahaState.pitsState = Stream.concat(boardOne.stream(), boardTwo.stream()).collect(Collectors.toList());
-            listOfObservers.forEach((observer) -> observer.currentState(kalahaState));
             boolean boardOneEmpty = true;
             boolean boardTwoEmpty = true;
             for (int i = 0; i < boardOne.size() - 1; i++) {
@@ -151,6 +117,7 @@ public class KalahaGame implements Kalah {
                     break;
                 }
             }
+            kalahaState.notifyChanged();
             if (boardOneEmpty || boardTwoEmpty) {
                 kalahaState.gameState = KalahaState.GameStates.END_OF_GAME;
                 int sumOne = 0;
@@ -167,16 +134,16 @@ public class KalahaGame implements Kalah {
                         boardTwo.set(i, sumTwo);
                     }
                 }
-                kalahaState.pitsState = Stream.concat(boardOne.stream(), boardTwo.stream()).collect(Collectors.toList());
+                kalahaState.setPitsState(Stream.concat(boardOne.stream(), boardTwo.stream()).collect(Collectors.toList()));
                 if (sumOne > sumTwo) {
-                    kalahaState.gameResult = KalahaState.GameResults.PLAYER1_WON;
+                    kalahaState.setGameResult(KalahaState.GameResults.PLAYER1_WON);
                 } else if (sumTwo > sumOne) {
-                    kalahaState.gameResult = KalahaState.GameResults.PLAYER2_WON;
+                    kalahaState.setGameResult(KalahaState.GameResults.PLAYER2_WON);
                 } else {
-                    kalahaState.gameResult = KalahaState.GameResults.DRAW;
+                    kalahaState.setGameResult(KalahaState.GameResults.DRAW);
                 }
             }
         }
-        listOfObservers.forEach((observer) -> observer.currentState(kalahaState));
+        kalahaState.notifyChanged();
     }
 }
