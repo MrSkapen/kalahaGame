@@ -9,10 +9,19 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class KalahaStateImpl implements interfaces.KalahaState {
-
+    private static KalahaStateImpl instance;
     public KalahaState.GameStates gameState;
     public KalahaState.GameResults gameResult;
     public List<Integer> pitsState;
+
+    private KalahaStateImpl() {};
+
+    public static KalahaStateImpl getInstance() {
+        if (instance == null) {
+            instance = new KalahaStateImpl();
+        }
+        return instance;
+    }
 
     @Override
     public List<Integer> getPitsState() {
@@ -40,8 +49,9 @@ public class KalahaGame implements Kalah {
     private KalahPlayer PLAYER_SECOND = null;
     private ArrayList<Integer> boardOne = new ArrayList<>();
     private ArrayList<Integer> boardTwo = new ArrayList<>();
-    private final KalahaStateImpl kalahaState = new KalahaStateImpl();
+    private final KalahaStateImpl kalahaState = KalahaStateImpl.getInstance();
     private Integer housesNumber;
+    Strategy strategy;
 
     @Override
     public void setVariant(int houses, int seeds) {
@@ -80,14 +90,11 @@ public class KalahaGame implements Kalah {
             int number_of_house;
             ArrayList<Integer> currentBoard = new ArrayList<>();
             if (currentPlayer == PLAYER_FIRST) {
-                currentBoard.addAll(boardOne);
-                currentBoard.addAll(boardTwo);
-                kalahaState.gameState = KalahaState.GameStates.AFTER_PLAYER1_TURN;
+                strategy = new Player1Strategy();
             } else {
-                currentBoard.addAll(boardTwo);
-                currentBoard.addAll(boardOne);
-                kalahaState.gameState = KalahaState.GameStates.AFTER_PLAYER2_TURN;
+                strategy = new Player2Strategy();
             }
+            strategy.afterPlayerTurn(currentBoard, boardOne, boardTwo, kalahaState.gameState);
             do {
                 number_of_house = currentPlayer.yourMove(currentBoard);
             } while ((number_of_house < 0) || (number_of_house >= housesNumber) || (currentBoard.get(number_of_house) == 0));
