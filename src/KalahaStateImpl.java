@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Observable;
 
 class KalahaStateImpl extends Observable implements interfaces.KalahaState {
-    private static KalahaStateImpl instance;
     public KalahaState.GameStates gameState;
     public KalahaState.GameResults gameResult;
     public List<Integer> pitsState;
@@ -26,14 +25,7 @@ class KalahaStateImpl extends Observable implements interfaces.KalahaState {
         this.pitsState = pitsState;
     }
 
-    private KalahaStateImpl() {};
-
-    public static KalahaStateImpl getInstance() {
-        if (instance == null) {
-            instance = new KalahaStateImpl();
-        }
-        return instance;
-    }
+    KalahaStateImpl() {};
 
     @Override
     public List<Integer> getPitsState() {

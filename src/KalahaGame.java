@@ -17,7 +17,7 @@ public class KalahaGame implements Kalah  {
     private KalahPlayer PLAYER_SECOND = null;
     private ArrayList<Integer> boardOne = new ArrayList<>();
     private ArrayList<Integer> boardTwo = new ArrayList<>();
-    private final KalahaStateImpl kalahaState = KalahaStateImpl.getInstance();
+    private final KalahaStateImpl kalahaState = new KalahaStateImpl();
     private Integer housesNumber;
     Strategy strategy;
 
