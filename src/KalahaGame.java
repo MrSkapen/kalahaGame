@@ -20,7 +20,7 @@ public class KalahaGame implements Kalah  {
     private final KalahaStateImpl kalahaState = new KalahaStateImpl();
     private Integer housesNumber;
     Strategy strategy;
-    CalculatorSingleton calculatorSingleton = CalculatorSingleton.getInstance();
+    Fasada fasada = new Fasada();
 
     @Override
     public void setVariant(int houses, int seeds) {
@@ -69,28 +69,8 @@ public class KalahaGame implements Kalah  {
 
             int counter = number_of_house + 1;
             int number_of_seeds = currentBoard.get(number_of_house);
-            currentBoard.set(number_of_house, 0);
-            for (int i = 0; i < number_of_seeds; i++) {
-                if (counter > currentBoard.size() - 2) {
-                    counter = 0;
-                }
-                currentBoard.set(counter, currentBoard.get(counter) + 1);
-                counter++;
-            }
-            counter--;
-            if (counter != housesNumber) {
-                if (currentBoard.get(counter) == 1) {
-                    if (counter <= housesNumber) {
-                        int oppositeHouse = calculatorSingleton.calculateOppositeHouse(housesNumber, counter);
-                        if (currentBoard.get(oppositeHouse) != 0) {
-                            int bonusSeeds = currentBoard.get(counter) + currentBoard.get(oppositeHouse);
-                            currentBoard.set(counter, 0);
-                            currentBoard.set(oppositeHouse, 0);
-                            currentBoard.set(housesNumber, currentBoard.get(housesNumber) + bonusSeeds);
-                        }
-                    }
-                }
-            }
+           fasada.SetBoardOne(counter, number_of_house, currentBoard, number_of_seeds, housesNumber);
+           currentBoard = fasada.getGameMoves();
             if (currentPlayer == PLAYER_FIRST) {
                 boardOne = new ArrayList<>(currentBoard.subList(0, housesNumber + 1));
                 boardTwo = new ArrayList<>(currentBoard.subList(housesNumber + 1, currentBoard.size()));
@@ -104,7 +84,8 @@ public class KalahaGame implements Kalah  {
                     currentPlayer = PLAYER_FIRST;
                 }
             }
-            kalahaState.pitsState = Stream.concat(boardOne.stream(), boardTwo.stream()).collect(Collectors.toList());
+            fasada.setBoards(boardOne, boardTwo);
+            kalahaState.pitsState = fasada.getGameBoard();
             boolean boardOneEmpty = true;
             boolean boardTwoEmpty = true;
             for (int i = 0; i < boardOne.size() - 1; i++) {
