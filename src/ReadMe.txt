@@ -5,6 +5,7 @@ Marcin Chamera:
 - projekt tablic graczy
 - wzorzec strategia
 - wzorzec singleton
+- wzorzec fasada
 
 Dariusz Dyrga:
 - implementacja startGame
@@ -12,3 +13,4 @@ Dariusz Dyrga:
 - refaktoryzacja
 - logika gry/ poprawnosc ruchow graczy
 - wzorzec obserwator
+- wzorzec fasada
