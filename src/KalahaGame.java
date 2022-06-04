@@ -20,6 +20,7 @@ public class KalahaGame implements Kalah  {
     private final KalahaStateImpl kalahaState = new KalahaStateImpl();
     private Integer housesNumber;
     Strategy strategy;
+    CalculatorSingleton calculatorSingleton = CalculatorSingleton.getInstance();
 
     @Override
     public void setVariant(int houses, int seeds) {
@@ -80,7 +81,7 @@ public class KalahaGame implements Kalah  {
             if (counter != housesNumber) {
                 if (currentBoard.get(counter) == 1) {
                     if (counter <= housesNumber) {
-                        int oppositeHouse = housesNumber + (housesNumber - counter);
+                        int oppositeHouse = calculatorSingleton.calculateOppositeHouse(housesNumber, counter);
                         if (currentBoard.get(oppositeHouse) != 0) {
                             int bonusSeeds = currentBoard.get(counter) + currentBoard.get(oppositeHouse);
                             currentBoard.set(counter, 0);
