@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 
 import interfaces.KalahaState;
-import interfaces.KalahaState.GameStates;
 
 public class Player2Strategy implements Strategy {
 

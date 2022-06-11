@@ -1,3 +1,4 @@
+
 import tests.KahalaPlayer;
 import tests.Observer;
 
@@ -8,7 +9,6 @@ public class Test {
         game.registerPlayer(new KahalaPlayer("1"));
         game.registerPlayer(new KahalaPlayer("2"));
         game.addObserver(new Observer());
-
         game.startGame();
     }
 }

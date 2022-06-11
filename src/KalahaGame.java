@@ -1,3 +1,4 @@
+import fasada.GameLogic;
 import interfaces.GameStateObserver;
 import interfaces.Kalah;
 import interfaces.KalahPlayer;
@@ -8,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
-public class KalahaGame implements Kalah  {
+public class KalahaGame implements Kalah {
 
     public KalahaGame() {
     }
@@ -20,7 +21,6 @@ public class KalahaGame implements Kalah  {
     private final KalahaStateImpl kalahaState = new KalahaStateImpl();
     private Integer housesNumber;
     Strategy strategy;
-    Fasada fasada = new Fasada();
 
     @Override
     public void setVariant(int houses, int seeds) {
@@ -52,25 +52,32 @@ public class KalahaGame implements Kalah  {
 
     @Override
     public void startGame() {
+
+        GameLogic gameLogic = new GameLogic(housesNumber);
         KalahPlayer currentPlayer = PLAYER_FIRST;
         kalahaState.notifyChanged();
+
         while (kalahaState.getGameState() != KalahaState.GameStates.END_OF_GAME) {
-            int number_of_house;
-            ArrayList<Integer> currentBoard = new ArrayList<>();
+
             if (currentPlayer == PLAYER_FIRST) {
                 strategy = new Player1Strategy();
             } else {
                 strategy = new Player2Strategy();
             }
+
+            ArrayList<Integer> currentBoard = new ArrayList<>();
             strategy.afterPlayerTurn(currentBoard, boardOne, boardTwo, kalahaState);
+
+            int number_of_house;
             do {
                 number_of_house = currentPlayer.yourMove(currentBoard);
             } while ((number_of_house < 0) || (number_of_house >= housesNumber) || (currentBoard.get(number_of_house) == 0));
 
-            int counter = number_of_house + 1;
             int number_of_seeds = currentBoard.get(number_of_house);
-           fasada.SetBoardOne(counter, number_of_house, currentBoard, number_of_seeds, housesNumber);
-           currentBoard = fasada.getGameMoves();
+
+            currentBoard = gameLogic.refreshBoard(currentBoard, number_of_house, number_of_seeds);
+            int counter = gameLogic.getCounter(number_of_house,number_of_seeds);
+
             if (currentPlayer == PLAYER_FIRST) {
                 boardOne = new ArrayList<>(currentBoard.subList(0, housesNumber + 1));
                 boardTwo = new ArrayList<>(currentBoard.subList(housesNumber + 1, currentBoard.size()));
@@ -84,38 +91,23 @@ public class KalahaGame implements Kalah  {
                     currentPlayer = PLAYER_FIRST;
                 }
             }
-            fasada.setBoards(boardOne, boardTwo);
-            kalahaState.pitsState = fasada.getGameBoard();
-            boolean boardOneEmpty = true;
-            boolean boardTwoEmpty = true;
-            for (int i = 0; i < boardOne.size() - 1; i++) {
-                if (boardOne.get(i) != 0) {
-                    boardOneEmpty = false;
-                }
-                if (boardTwo.get(i) != 0) {
-                    boardTwoEmpty = false;
-                }
-                if (!boardOneEmpty && !boardTwoEmpty) {
-                    break;
-                }
-            }
+
+            kalahaState.pitsState = Stream.concat(boardOne.stream(), boardTwo.stream()).collect(Collectors.toList());
             kalahaState.notifyChanged();
+
+
+            boolean boardOneEmpty = gameLogic.checkIsEndOfGame(boardOne);
+            boolean boardTwoEmpty = gameLogic.checkIsEndOfGame(boardTwo);
+
             if (boardOneEmpty || boardTwoEmpty) {
                 kalahaState.gameState = KalahaState.GameStates.END_OF_GAME;
-                int sumOne = 0;
-                int sumTwo = 0;
-                for (int i = 0; i < boardOne.size(); i++) {
-                    sumOne += boardOne.get(i);
-                    sumTwo += boardTwo.get(i);
 
-                    if (i != housesNumber) {
-                        boardOne.set(i, 0);
-                        boardTwo.set(i, 0);
-                    } else {
-                        boardOne.set(i, sumOne);
-                        boardTwo.set(i, sumTwo);
-                    }
-                }
+                boardOne = gameLogic.getFinalBoard(boardOne);
+                boardTwo = gameLogic.getFinalBoard(boardTwo);
+
+                int sumOne = gameLogic.countPoints(boardOne);
+                int sumTwo = gameLogic.countPoints(boardTwo);
+
                 kalahaState.setPitsState(Stream.concat(boardOne.stream(), boardTwo.stream()).collect(Collectors.toList()));
                 if (sumOne > sumTwo) {
                     kalahaState.setGameResult(KalahaState.GameResults.PLAYER1_WON);

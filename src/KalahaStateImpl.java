@@ -25,7 +25,7 @@ class KalahaStateImpl extends Observable implements interfaces.KalahaState {
         this.pitsState = pitsState;
     }
 
-    KalahaStateImpl() {};
+    KalahaStateImpl() {}
 
     @Override
     public List<Integer> getPitsState() {

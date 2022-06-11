@@ -1,6 +1,8 @@
+package fasada;
+
 public class CalculatorSingleton {
     private static CalculatorSingleton instance;
-    private CalculatorSingleton() {};
+    private CalculatorSingleton() {}
     public static CalculatorSingleton getInstance() {
         if (instance == null) {
             instance = new CalculatorSingleton();
