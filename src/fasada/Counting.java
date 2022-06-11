@@ -4,6 +4,17 @@ import java.util.ArrayList;
 
 public class Counting {
 
+    public boolean isEmptyBoard(ArrayList<Integer> board) {
+        boolean isEmpty = true;
+        for (int i = 0; i < board.size() - 1; i++) {
+            if (board.get(i) != 0) {
+                isEmpty = false;
+                break;
+            }
+        }
+        return isEmpty;
+    }
+
     public Integer counting(ArrayList<Integer> board){
         int sumOne = 0;
         for (Integer integer : board) {

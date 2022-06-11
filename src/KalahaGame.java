@@ -81,20 +81,19 @@ public class KalahaGame implements Kalah {
             if (currentPlayer == PLAYER_FIRST) {
                 boardOne = new ArrayList<>(currentBoard.subList(0, housesNumber + 1));
                 boardTwo = new ArrayList<>(currentBoard.subList(housesNumber + 1, currentBoard.size()));
-                if (counter + 1 != housesNumber + 1) {
+                if (counter != housesNumber) {
                     currentPlayer = PLAYER_SECOND;
                 }
             } else {
                 boardTwo = new ArrayList<>(currentBoard.subList(0, housesNumber + 1));
                 boardOne = new ArrayList<>(currentBoard.subList(housesNumber + 1, currentBoard.size()));
-                if (counter + 1 != housesNumber + 1) {
+                if (counter!= housesNumber) {
                     currentPlayer = PLAYER_FIRST;
                 }
             }
 
             kalahaState.pitsState = Stream.concat(boardOne.stream(), boardTwo.stream()).collect(Collectors.toList());
             kalahaState.notifyChanged();
-
 
             boolean boardOneEmpty = gameLogic.checkIsEndOfGame(boardOne);
             boolean boardTwoEmpty = gameLogic.checkIsEndOfGame(boardTwo);
@@ -121,3 +120,4 @@ public class KalahaGame implements Kalah {
         kalahaState.notifyChanged();
     }
 }
+

@@ -32,16 +32,6 @@ public class Board {
         return currentBoard;
     }
 
-    public boolean isEmptyBoard(ArrayList<Integer> board) {
-        boolean isEmpty = true;
-        for (int i = 0; i < board.size() - 1; i++) {
-            if (board.get(i) != 0) {
-                isEmpty = false;
-                break;
-            }
-        }
-        return isEmpty;
-    }
 
     public ArrayList<Integer> endingBoard(ArrayList<Integer> board, int housesNumber) {
         int sumOne = 0;

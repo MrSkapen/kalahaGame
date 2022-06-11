@@ -17,7 +17,7 @@ public class GameLogic {
     }
 
     public boolean checkIsEndOfGame(ArrayList<Integer> sampleBoard){
-        return board.isEmptyBoard(sampleBoard);
+        return counting.isEmptyBoard(sampleBoard);
     }
 
     public ArrayList<Integer> getFinalBoard(ArrayList<Integer> sampleBoard){
