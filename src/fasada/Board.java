@@ -5,7 +5,6 @@ import java.util.ArrayList;
 public class Board {
 
     public ArrayList<Integer> moves(ArrayList<Integer> currentBoard, int number_of_house, int number_of_seeds, int housesNumber) {
-        CalculatorSingleton calculatorSingleton = CalculatorSingleton.getInstance();
         currentBoard.set(number_of_house, 0);
         int counter = number_of_house + 1;
         for (int i = 0; i < number_of_seeds; i++) {
@@ -19,7 +18,7 @@ public class Board {
         if (counter != housesNumber) {
             if (currentBoard.get(counter) == 1) {
                 if (counter <= housesNumber) {
-                    int oppositeHouse = calculatorSingleton.calculateOppositeHouse(housesNumber, counter);
+                    int oppositeHouse = CalculatorSingleton.getInstance().calculateOppositeHouse(housesNumber, counter);
                     if (currentBoard.get(oppositeHouse) != 0) {
                         int bonusSeeds = currentBoard.get(counter) + currentBoard.get(oppositeHouse);
                         currentBoard.set(counter, 0);
